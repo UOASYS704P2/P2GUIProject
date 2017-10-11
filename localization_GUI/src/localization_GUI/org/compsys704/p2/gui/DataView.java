@@ -28,6 +28,12 @@ import localization_GUI.org.compsys704.p2.exception.PortInUse;
 import localization_GUI.org.compsys704.p2.exception.ReadDataFromSerialPortFailure;
 import localization_GUI.org.compsys704.p2.exception.SerialPortParameterFailure;
 import localization_GUI.org.compsys704.p2.serial.SerialTool;
+import javax.swing.JMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JTable;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * @author KGL
@@ -64,14 +70,12 @@ public class DataView extends JFrame{
     
     private Font font = new Font("Times New Roman", Font.BOLD, 20);
     
-    private Label tem = new Label("no data", Label.CENTER);    //x
-    private Label hum = new Label("no data", Label.CENTER);    //y
-    private Label pa = new Label("no data", Label.CENTER);    //z
-    
     private Choice commChoice = new Choice();
     private Choice bpsChoice = new Choice();
     
     private Button openSerialButton = new Button("Open");
+    private JTable imuTable;
+    private final JLabel lblNewLabel_1 = new JLabel("IMU:");
     
     public DataView() {
         commList = SERIAL_TOOL.findPort();
@@ -93,25 +97,7 @@ public class DataView extends JFrame{
             
         });
         
-        tem.setBounds(140, 103, 225, 50);
-        tem.setBackground(Color.black);
-        tem.setFont(font);
-        tem.setForeground(Color.white);
-        getContentPane().add(tem);
-        
-        hum.setBounds(520, 103, 225, 50);
-        hum.setBackground(Color.black);
-        hum.setFont(font);
-        hum.setForeground(Color.white);
-        getContentPane().add(hum);
-        
-        pa.setBounds(140, 193, 225, 50);
-        pa.setBackground(Color.black);
-        pa.setFont(font);
-        pa.setForeground(Color.white);
-        getContentPane().add(pa);
-        
-        commChoice.setBounds(106, 10, 121, 21);
+        commChoice.setBounds(106, 10, 99, 21);
         if (commList == null || commList.size()<1) {
             JOptionPane.showMessageDialog(null, "cannot find any serial port!", "Warn", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -122,29 +108,62 @@ public class DataView extends JFrame{
         }
         getContentPane().add(commChoice);
         
-        bpsChoice.setBounds(393, 10, 106, 21);
+        bpsChoice.setBounds(310, 10, 106, 21);
         bpsChoice.add("9600");
         bpsChoice.add("19200");
         bpsChoice.add("115200");
         getContentPane().add(bpsChoice);
         
-        openSerialButton.setBounds(538, 10, 106, 21);
+        openSerialButton.setBounds(445, 10, 78, 21);
         openSerialButton.setBackground(SystemColor.activeCaption);
         openSerialButton.setFont(new Font("Times New Roman", Font.BOLD, 14));
         openSerialButton.setForeground(SystemColor.desktop);
         getContentPane().add(openSerialButton);
         
         JLabel lblNewLabel = new JLabel("Serial Ports:");
+        lblNewLabel.setLabelFor(commChoice);
         lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
         lblNewLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         lblNewLabel.setBounds(22, 10, 78, 21);
         getContentPane().add(lblNewLabel);
         
         JLabel lblBautRate = new JLabel("Baut Rate:");
+        lblBautRate.setLabelFor(bpsChoice);
         lblBautRate.setHorizontalAlignment(SwingConstants.CENTER);
         lblBautRate.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        lblBautRate.setBounds(309, 10, 78, 21);
+        lblBautRate.setBounds(226, 10, 78, 21);
         getContentPane().add(lblBautRate);
+        
+        imuTable = new JTable();
+        lblNewLabel_1.setLabelFor(imuTable);
+        imuTable.setModel(new DefaultTableModel(
+        	new Object[][] {
+        		{"x:", null},
+        		{"y:", null},
+        		{"z:", null},
+        	},
+        	new String[] {
+        		"IMU", "IMU"
+        	}
+        ) {
+        	Class[] columnTypes = new Class[] {
+        		String.class, String.class
+        	};
+        	public Class getColumnClass(int columnIndex) {
+        		return columnTypes[columnIndex];
+        	}
+        });
+        imuTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+        imuTable.setRowHeight(30);
+        imuTable.setFont(new Font("Times New Roman", Font.BOLD, 16));
+        imuTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+        imuTable.setBackground(new Color(255, 239, 213));
+        imuTable.setBounds(22, 102, 202, 90);
+        getContentPane().add(imuTable);
+        lblNewLabel_1.setBackground(Color.WHITE);
+        lblNewLabel_1.setBounds(22, 73, 271, 27);
+        
+        getContentPane().add(lblNewLabel_1);
         
         openSerialButton.addActionListener(new ActionListener() {
 
@@ -259,7 +278,6 @@ public class DataView extends JFrame{
                 }
             }
         }
-        
     }
     
     /**
@@ -334,9 +352,6 @@ public class DataView extends JFrame{
                                                 System.out.println(elements[i]);
                                             }*/
                                             //System.out.println("win_dir: " + elements[5]);
-                                            tem.setText(elements[0] + " ℃");
-                                            hum.setText(elements[1] + " %");
-                                            pa.setText(elements[2] + " hPa");
                                         } catch (ArrayIndexOutOfBoundsException e) {
                                             JOptionPane.showMessageDialog(null, "数据解析过程出错，更新界面数据失败！请检查设备或程序！", "错误", JOptionPane.INFORMATION_MESSAGE);
                                             System.exit(0);
