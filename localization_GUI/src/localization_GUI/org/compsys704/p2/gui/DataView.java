@@ -4,36 +4,38 @@ import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Label;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.TooManyListenersException;
+import java.util.Vector;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableModel;
 
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import localization_GUI.org.compsys704.p2.exception.ExceptionWriter;
 import localization_GUI.org.compsys704.p2.exception.NoSuchPort;
 import localization_GUI.org.compsys704.p2.exception.NotASerialPort;
 import localization_GUI.org.compsys704.p2.exception.PortInUse;
 import localization_GUI.org.compsys704.p2.exception.ReadDataFromSerialPortFailure;
 import localization_GUI.org.compsys704.p2.exception.SerialPortParameterFailure;
 import localization_GUI.org.compsys704.p2.serial.SerialTool;
-import javax.swing.JMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JTable;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
 /**
  * @author KGL
@@ -56,19 +58,17 @@ public class DataView extends JFrame{
     /**
      * frame width
      */
-    public static final int WIDTH = 900;
+    public static final int WIDTH = 700;
     
     /**
      * frame height
      */
-    public static final int HEIGHT = 700;
+    public static final int HEIGHT = 800;
     
     private static SerialTool SERIAL_TOOL = SerialTool.getSerialTool();
 
     private List<String> commList = null;
     private SerialPort serialPort = null;
-    
-    private Font font = new Font("Times New Roman", Font.BOLD, 20);
     
     private Choice commChoice = new Choice();
     private Choice bpsChoice = new Choice();
@@ -76,6 +76,16 @@ public class DataView extends JFrame{
     private Button openSerialButton = new Button("Open");
     private JTable imuTable;
     private final JLabel lblNewLabel_1 = new JLabel("IMU:");
+    private final JLabel lblNewLabel_2 = new JLabel("Output:");
+    DefaultListModel<String> listModel = new DefaultListModel<>();
+    private final JList<String> list = new JList<>(listModel);
+    private final JLabel label = new JLabel("Position history:");
+    DefaultListModel<String> logListModel = new DefaultListModel<>();
+    private final JList<String> logList = new JList<>(logListModel);
+    
+    Vector<Vector<String>> tableData = new Vector<>(3);
+    Vector<String> tableTitles = new Vector<>(2);
+    private final JScrollPane scrollPane_1 = new JScrollPane();
     
     public DataView() {
         commList = SERIAL_TOOL.findPort();
@@ -134,25 +144,27 @@ public class DataView extends JFrame{
         lblBautRate.setBounds(226, 10, 78, 21);
         getContentPane().add(lblBautRate);
         
-        imuTable = new JTable();
+//        imuTable = new JTable();
+        lblNewLabel_1.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         lblNewLabel_1.setLabelFor(imuTable);
-        imuTable.setModel(new DefaultTableModel(
-        	new Object[][] {
-        		{"x:", null},
-        		{"y:", null},
-        		{"z:", null},
-        	},
-        	new String[] {
-        		"IMU", "IMU"
-        	}
-        ) {
-        	Class[] columnTypes = new Class[] {
-        		String.class, String.class
-        	};
-        	public Class getColumnClass(int columnIndex) {
-        		return columnTypes[columnIndex];
-        	}
-        });
+        Vector<String> row0Data = new Vector<>();
+        row0Data.addElement("x:");
+        row0Data.addElement("");
+        tableData.add(row0Data);
+        Vector<String> row1Data = new Vector<>();
+        row1Data.addElement("y:");
+        row1Data.addElement("");
+        tableData.add(row1Data);
+        Vector<String> row2Data = new Vector<>();
+        row2Data.addElement("z:");
+        row2Data.addElement("");
+        tableData.add(row2Data);
+        tableTitles.addElement("IMU");
+        tableTitles.addElement("IMU");
+        
+        DefaultTableModel tableModel = new DefaultTableModel(tableData, tableTitles);
+        imuTable = new JTable(tableModel);
+        
         imuTable.getColumnModel().getColumn(0).setPreferredWidth(30);
         imuTable.setRowHeight(30);
         imuTable.setFont(new Font("Times New Roman", Font.BOLD, 16));
@@ -161,9 +173,40 @@ public class DataView extends JFrame{
         imuTable.setBounds(22, 102, 202, 90);
         getContentPane().add(imuTable);
         lblNewLabel_1.setBackground(Color.WHITE);
-        lblNewLabel_1.setBounds(22, 73, 271, 27);
+        lblNewLabel_1.setBounds(22, 73, 202, 27);
         
         getContentPane().add(lblNewLabel_1);
+        
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBounds(10, 595, 674, 166);
+        scrollPane.getViewport().setOpaque(false);  
+        getContentPane().add(scrollPane);
+        logList.setBackground(new Color(253, 245, 230));
+        logList.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        
+        scrollPane.setViewportView(logList);
+        lblNewLabel_2.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        lblNewLabel_2.setBounds(10, 568, 86, 26);
+        
+        getContentPane().add(lblNewLabel_2);
+        label.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        label.setBackground(Color.WHITE);
+        label.setBounds(22, 229, 202, 27);
+        
+        getContentPane().add(label);
+        scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane_1.getVerticalScrollBar().setValue(529);
+        scrollPane_1.setBounds(22, 250, 202, 289);
+        
+        getContentPane().add(scrollPane_1);
+        list.setValueIsAdjusting(true);
+        list.setVisibleRowCount(18);
+        list.setLayoutOrientation(JList.VERTICAL);
+        scrollPane_1.setViewportView(list);
+        list.setFont(new Font("Times New Roman", Font.BOLD, 12));
+        list.setBackground(new Color(255, 239, 213));
+        list.setBorder(new LineBorder(new Color(0, 0, 0)));
         
         openSerialButton.addActionListener(new ActionListener() {
 
@@ -198,7 +241,6 @@ public class DataView extends JFrame{
             }
         });
         
-        
         this.setResizable(false);
         
         new Thread(new RepaintThread()).start();
@@ -209,131 +251,129 @@ public class DataView extends JFrame{
      */
     private class RepaintThread implements Runnable {
         public void run() {
+        	
+        	Random random = new Random();
+        	int x,y,z;
             while(true) {
-                //调用重画方法
                 repaint();
+                x = random.nextInt(500);
+                y = random.nextInt(500);
+                z = random.nextInt(500);
                 
-                //扫描可用串口
-                commList = SERIAL_TOOL.findPort();
-                if (commList != null && commList.size()>0) {
-                    
-                    //添加新扫描到的可用串口
-                    for (String s : commList) {
-                        
-                        //该串口名是否已存在，初始默认为不存在（在commList里存在但在commChoice里不存在，则新添加）
-                        boolean commExist = false;    
-                        
-                        for (int i=0; i<commChoice.getItemCount(); i++) {
-                            if (s.equals(commChoice.getItem(i))) {
-                                //当前扫描到的串口名已经在初始扫描时存在
-                                commExist = true;
-                                break;
-                            }                    
-                        }
-                        
-                        if (commExist) {
-                            //当前扫描到的串口名已经在初始扫描时存在，直接进入下一次循环
-                            continue;
-                        }
-                        else {
-                            //若不存在则添加新串口名至可用串口下拉列表
-                            commChoice.add(s);
-                        }
-                    }
-                    
-                    //移除已经不可用的串口
-                    for (int i=0; i<commChoice.getItemCount(); i++) {
-                        
-                        //该串口是否已失效，初始默认为已经失效（在commChoice里存在但在commList里不存在，则已经失效）
-                        boolean commNotExist = true;    
-                        
-                        for (String s : commList) {
-                            if (s.equals(commChoice.getItem(i))) {
-                                commNotExist = false;    
-                                break;
-                            }
-                        }
-                        
-                        if (commNotExist) {
-                            //System.out.println("remove" + commChoice.getItem(i));
-                            commChoice.remove(i);
-                        }
-                        else {
-                            continue;
-                        }
-                    }
-                    
-                }
-                else {
-                    //如果扫描到的commList为空，则移除所有已有串口
-                    commChoice.removeAll();
-                }
-
+                Iterator<Vector<String>> iterator = tableData.iterator();
+                while (iterator.hasNext()) {
+					Vector<String> rowData = (Vector<String>) iterator.next();
+					rowData.set(1, "" + random.nextInt(256));
+				}
+                
+                listModel.addElement("location: (x,y,z) : (" + x + "," + y + "," + z + ")");
+                list.ensureIndexIsVisible(list.getModel().getSize() -1);
                 try {
-                    Thread.sleep(30);
-                } catch (InterruptedException e) {
-                    String err = ExceptionWriter.getErrorInfoFromException(e);
-                    JOptionPane.showMessageDialog(null, err, "错误", JOptionPane.INFORMATION_MESSAGE);
-                    System.exit(0);
-                }
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+                
+                logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":" + x + "," + y + "," + z + "\"}\r\n");
+                logList.ensureIndexIsVisible(list.getModel().getSize() -1);
+                
+//                commList = SERIAL_TOOL.findPort();
+//                if (commList != null && commList.size()>0) {
+//                    for (String s : commList) {
+//                        boolean commExist = false;    
+//                        for (int i=0; i<commChoice.getItemCount(); i++) {
+//                            if (s.equals(commChoice.getItem(i))) {
+//                                commExist = true;
+//                                break;
+//                            }                    
+//                        }
+//                        
+//                        if (commExist) {
+//                            continue;
+//                        }
+//                        else {
+//                            commChoice.add(s);
+//                        }
+//                    }
+//                    
+//                    //remove unavailable serial ports
+//                    for (int i=0; i<commChoice.getItemCount(); i++) {
+//                        boolean commNotExist = true;    
+//                        for (String s : commList) {
+//                            if (s.equals(commChoice.getItem(i))) {
+//                                commNotExist = false;
+//                                break;
+//                            }
+//                        }
+//                        if (commNotExist) {
+//                            commChoice.remove(i);
+//                        }
+//                        else {
+//                            continue;
+//                        }
+//                    }
+//                    
+//                }
+//                else {
+//                    commChoice.removeAll();
+//                }
+//
+//                try {
+//                    Thread.sleep(30);
+//                } catch (InterruptedException e) {
+//                    String err = ExceptionWriter.getErrorInfoFromException(e);
+//                    JOptionPane.showMessageDialog(null, err, "错误", JOptionPane.INFORMATION_MESSAGE);
+//                    System.exit(0);
+//                }
             }
         }
     }
     
     /**
-     * 以内部类形式创建一个串口监听类
-     * @author zhong
+     * Serial ports listener
+     * @author KGL
      *
      */
     private class SerialListener implements SerialPortEventListener {
         
-        /**
-         * 处理监控到的串口事件
-         */
         public void serialEvent(SerialPortEvent serialPortEvent) {
             
             switch (serialPortEvent.getEventType()) {
-
-                case SerialPortEvent.BI: // 10 通讯中断
-                    JOptionPane.showMessageDialog(null, "与串口设备通讯中断", "错误", JOptionPane.INFORMATION_MESSAGE);
+                case SerialPortEvent.BI: // 10 lose connection
+                	JOptionPane.showMessageDialog(null, "lose connection!", "Erro", JOptionPane.INFORMATION_MESSAGE);
                     break;
+                case SerialPortEvent.OE: // 7 The OE port event signals an overrun error
 
-                case SerialPortEvent.OE: // 7 溢位（溢出）错误
+                case SerialPortEvent.FE: // 9 The FE port event signals a framing error.
 
-                case SerialPortEvent.FE: // 9 帧错误
+                case SerialPortEvent.PE: // 8 The PE port event signals a parity error
 
-                case SerialPortEvent.PE: // 8 奇偶校验错误
+                case SerialPortEvent.CD: // 6 The CD port event is triggered when the Data Carrier Detect line on the port changes its logic level.
 
-                case SerialPortEvent.CD: // 6 载波检测
+                case SerialPortEvent.CTS: // 3 clear buffered data
 
-                case SerialPortEvent.CTS: // 3 清除待发送数据
+                case SerialPortEvent.DSR: // 4 ready to send data
 
-                case SerialPortEvent.DSR: // 4 待发送数据准备好了
+                case SerialPortEvent.RI: // 5 The RI port event is triggered when the Ring Indicator line on the port changes its logic level.
 
-                case SerialPortEvent.RI: // 5 振铃指示
-
-                case SerialPortEvent.OUTPUT_BUFFER_EMPTY: // 2 输出缓冲区已清空
+                case SerialPortEvent.OUTPUT_BUFFER_EMPTY: // 2 output buffer has been cleared
                     break;
-                
-                case SerialPortEvent.DATA_AVAILABLE: // 1 串口存在可用数据
-                    
-                    //System.out.println("found data");
+                case SerialPortEvent.DATA_AVAILABLE: // 1 data exists in serial port
+                	
                     byte[] data = null;
-                    
                     try {
                         if (serialPort == null) {
-                            JOptionPane.showMessageDialog(null, "串口对象为空！监听失败！", "错误", JOptionPane.INFORMATION_MESSAGE);
+                        	JOptionPane.showMessageDialog(null, "serialPort obj is null, listen failed!", "Error", JOptionPane.INFORMATION_MESSAGE);
                         }
                         else {
-                            data = SERIAL_TOOL.readFromPort(serialPort);    //读取数据，存入字节数组
-                            //System.out.println(new String(data));
+                            data = SERIAL_TOOL.readFromPort(serialPort); //read data and store in a byte[]
+                            //System.out.println(data);
                             
-                       // 自定义解析过程，你在实际使用过程中可以按照自己的需求在接收到数据后对数据进行解析
-                            if (data == null || data.length < 1) {    //检查数据是否读取正确    
-                                JOptionPane.showMessageDialog(null, "读取数据过程中未获取到有效数据！请检查设备或程序！", "错误", JOptionPane.INFORMATION_MESSAGE);
+                            // parse customized receiving data
+                            if (data == null || data.length < 1) {
+                            	JOptionPane.showMessageDialog(null, "didn't receive valid data!", "Error", JOptionPane.INFORMATION_MESSAGE);
                                 System.exit(0);
-                            }
-                            else {
+                            } else {
                                 String dataOriginal = new String(data);    //将字节数组数据转换位为保存了原始数据的字符串
                                 String dataValid = "";    //有效数据（用来保存原始数据字符串去除最开头*号以后的字符串）
                                 String[] elements = null;    //用来保存按空格拆分原始字符串后得到的字符串数组    
@@ -344,14 +384,15 @@ public class DataView extends JFrame{
                                     if (elements == null || elements.length < 1) {    //检查数据是否解析正确
                                         JOptionPane.showMessageDialog(null, "数据解析过程出错，请检查设备或程序！", "错误", JOptionPane.INFORMATION_MESSAGE);
                                         System.exit(0);
-                                    }
-                                    else {
+                                    } else {
                                         try {
-                                            //更新界面Label值
                                             /*for (int i=0; i<elements.length; i++) {
                                                 System.out.println(elements[i]);
                                             }*/
                                             //System.out.println("win_dir: " + elements[5]);
+//                                        	tem.setText(elements[0] + " ℃");
+//                                          hum.setText(elements[1] + " %");
+//                                          pa.setText(elements[2] + " hPa");
                                         } catch (ArrayIndexOutOfBoundsException e) {
                                             JOptionPane.showMessageDialog(null, "数据解析过程出错，更新界面数据失败！请检查设备或程序！", "错误", JOptionPane.INFORMATION_MESSAGE);
                                             System.exit(0);
@@ -359,11 +400,10 @@ public class DataView extends JFrame{
                                     }    
                                 }
                             }
-                            
                         }                        
                         
                     } catch (ReadDataFromSerialPortFailure e) {
-                        JOptionPane.showMessageDialog(null, e, "错误", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.INFORMATION_MESSAGE);
                         System.exit(0);
                     }    
                     

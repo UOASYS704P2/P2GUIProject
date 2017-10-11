@@ -79,13 +79,11 @@ private class SerialListener implements SerialPortEventListener {
                         if (data == null || data.length < 1) {
                             JOptionPane.showMessageDialog(null, "didn't receive valid data!", "Error", JOptionPane.INFORMATION_MESSAGE);
                             System.exit(0);
-                        }
-                        else {
+                        } else {
                             String dataOriginal = new String(data);
                             System.out.println(dataOriginal);
                         }
                     }
-                    
                 } catch (ReadDataFromSerialPortFailure e) {
                     JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.INFORMATION_MESSAGE);
                     System.exit(0);
