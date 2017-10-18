@@ -36,6 +36,7 @@ import localization_GUI.org.compsys704.p2.exception.PortInUse;
 import localization_GUI.org.compsys704.p2.exception.ReadDataFromSerialPortFailure;
 import localization_GUI.org.compsys704.p2.exception.SerialPortParameterFailure;
 import localization_GUI.org.compsys704.p2.serial.SerialTool;
+import javax.swing.JPanel;
 
 /**
  * @author KGL
@@ -86,6 +87,8 @@ public class DataView extends JFrame{
     Vector<Vector<String>> tableData = new Vector<>(3);
     Vector<String> tableTitles = new Vector<>(2);
     private final JScrollPane scrollPane_1 = new JScrollPane();
+    
+    private JPanel map_panel;
     
     public DataView() {
         commList = SERIAL_TOOL.findPort();
@@ -208,6 +211,10 @@ public class DataView extends JFrame{
         list.setBackground(new Color(255, 239, 213));
         list.setBorder(new LineBorder(new Color(0, 0, 0)));
         
+        map_panel = new MapPanel();
+        map_panel.setBounds(326, 48, 298, 535);
+        getContentPane().add(map_panel);
+        
         openSerialButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -274,7 +281,7 @@ public class DataView extends JFrame{
 					e.printStackTrace();
 				}
                 
-                logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":" + x + "," + y + "," + z + "\"}\r\n");
+                logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":\"" + x + "," + y + "," + z + "\"}\r\n");
                 logList.ensureIndexIsVisible(list.getModel().getSize() -1);
                 
 //                commList = SERIAL_TOOL.findPort();
@@ -386,6 +393,7 @@ public class DataView extends JFrame{
                                         System.exit(0);
                                     } else {
                                         try {
+                                        	
                                             /*for (int i=0; i<elements.length; i++) {
                                                 System.out.println(elements[i]);
                                             }*/
