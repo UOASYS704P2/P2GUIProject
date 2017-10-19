@@ -30,6 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import localization_GUI.org.compsys704.p2.entity.Position;
 import localization_GUI.org.compsys704.p2.exception.NoSuchPort;
 import localization_GUI.org.compsys704.p2.exception.NotASerialPort;
 import localization_GUI.org.compsys704.p2.exception.PortInUse;
@@ -88,7 +89,7 @@ public class DataView extends JFrame{
     Vector<String> tableTitles = new Vector<>(2);
     private final JScrollPane scrollPane_1 = new JScrollPane();
     
-    private JPanel map_panel;
+    private MapPanel map_panel;
     
     public DataView() {
         commList = SERIAL_TOOL.findPort();
@@ -263,8 +264,8 @@ public class DataView extends JFrame{
         	int x,y,z;
             while(true) {
                 repaint();
-                x = random.nextInt(500);
-                y = random.nextInt(500);
+                x = random.nextInt(1057);
+                y = random.nextInt(1900);
                 z = random.nextInt(500);
                 
                 Iterator<Vector<String>> iterator = tableData.iterator();
@@ -283,6 +284,8 @@ public class DataView extends JFrame{
                 
                 logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":\"" + x + "," + y + "," + z + "\"}\r\n");
                 logList.ensureIndexIsVisible(list.getModel().getSize() -1);
+                
+                map_panel.addPosition(new Position(x, y));
                 
 //                commList = SERIAL_TOOL.findPort();
 //                if (commList != null && commList.size()>0) {
