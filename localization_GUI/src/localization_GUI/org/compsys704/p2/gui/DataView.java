@@ -37,7 +37,6 @@ import localization_GUI.org.compsys704.p2.exception.PortInUse;
 import localization_GUI.org.compsys704.p2.exception.ReadDataFromSerialPortFailure;
 import localization_GUI.org.compsys704.p2.exception.SerialPortParameterFailure;
 import localization_GUI.org.compsys704.p2.serial.SerialTool;
-import javax.swing.JPanel;
 
 /**
  * @author KGL
@@ -108,7 +107,6 @@ public class DataView extends JFrame{
                 }
                 System.exit(0);
             }
-            
         });
         
         commChoice.setBounds(106, 10, 99, 21);
@@ -332,7 +330,7 @@ public class DataView extends JFrame{
 //                    Thread.sleep(30);
 //                } catch (InterruptedException e) {
 //                    String err = ExceptionWriter.getErrorInfoFromException(e);
-//                    JOptionPane.showMessageDialog(null, err, "错误", JOptionPane.INFORMATION_MESSAGE);
+//                    JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.INFORMATION_MESSAGE);
 //                    System.exit(0);
 //                }
             }
@@ -350,7 +348,7 @@ public class DataView extends JFrame{
             
             switch (serialPortEvent.getEventType()) {
                 case SerialPortEvent.BI: // 10 lose connection
-                	JOptionPane.showMessageDialog(null, "lose connection!", "Erro", JOptionPane.INFORMATION_MESSAGE);
+                	JOptionPane.showMessageDialog(null, "lose connection!", "Error", JOptionPane.INFORMATION_MESSAGE);
                     break;
                 case SerialPortEvent.OE: // 7 The OE port event signals an overrun error
 
@@ -387,12 +385,12 @@ public class DataView extends JFrame{
                                 String dataOriginal = new String(data);    //将字节数组数据转换位为保存了原始数据的字符串
                                 String dataValid = "";    //有效数据（用来保存原始数据字符串去除最开头*号以后的字符串）
                                 String[] elements = null;    //用来保存按空格拆分原始字符串后得到的字符串数组    
-                                //解析数据
+                                //parse data
                                 if (dataOriginal.charAt(0) == '*') {    //当数据的第一个字符是*号时表示数据接收完成，开始解析                            
                                     dataValid = dataOriginal.substring(1);
                                     elements = dataValid.split(" ");
-                                    if (elements == null || elements.length < 1) {    //检查数据是否解析正确
-                                        JOptionPane.showMessageDialog(null, "数据解析过程出错，请检查设备或程序！", "错误", JOptionPane.INFORMATION_MESSAGE);
+                                    if (elements == null || elements.length < 1) {
+                                        JOptionPane.showMessageDialog(null, "parse data error, please check device or program!", "Error", JOptionPane.INFORMATION_MESSAGE);
                                         System.exit(0);
                                     } else {
                                         try {
@@ -405,7 +403,7 @@ public class DataView extends JFrame{
 //                                          hum.setText(elements[1] + " %");
 //                                          pa.setText(elements[2] + " hPa");
                                         } catch (ArrayIndexOutOfBoundsException e) {
-                                            JOptionPane.showMessageDialog(null, "数据解析过程出错，更新界面数据失败！请检查设备或程序！", "错误", JOptionPane.INFORMATION_MESSAGE);
+                                            JOptionPane.showMessageDialog(null, "parse data error, cannot refresh gui! please check device or program!", "Error", JOptionPane.INFORMATION_MESSAGE);
                                             System.exit(0);
                                         }
                                     }    
@@ -416,12 +414,9 @@ public class DataView extends JFrame{
                     } catch (ReadDataFromSerialPortFailure e) {
                         JOptionPane.showMessageDialog(null, e, "Error", JOptionPane.INFORMATION_MESSAGE);
                         System.exit(0);
-                    }    
-                    
+                    }
                     break;
-    
             }
-
         }
     }
     
