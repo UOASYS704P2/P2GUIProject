@@ -34,7 +34,7 @@ public class SerialTool {
         }
     }
     
-    private SerialTool() {}   
+    private SerialTool() {}
     
     /**
      * get singleton instance

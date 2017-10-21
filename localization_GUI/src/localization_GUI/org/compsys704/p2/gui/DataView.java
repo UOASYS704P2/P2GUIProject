@@ -211,6 +211,7 @@ public class DataView extends JFrame{
         list.setBorder(new LineBorder(new Color(0, 0, 0)));
         
         map_panel = new MapPanel();
+        map_panel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
         map_panel.setBounds(326, 48, 298, 535);
         getContentPane().add(map_panel);
         
