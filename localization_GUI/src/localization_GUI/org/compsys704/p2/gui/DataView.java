@@ -27,10 +27,14 @@ import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
+import com.google.gson.Gson;
+
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import localization_GUI.org.compsys704.p2.entity.DataReceiver;
 import localization_GUI.org.compsys704.p2.entity.Position;
+import localization_GUI.org.compsys704.p2.exception.ExceptionWriter;
 import localization_GUI.org.compsys704.p2.exception.NoSuchPort;
 import localization_GUI.org.compsys704.p2.exception.NotASerialPort;
 import localization_GUI.org.compsys704.p2.exception.PortInUse;
@@ -263,77 +267,55 @@ public class DataView extends JFrame{
         	int x,y,z;
             while(true) {
                 repaint();
-                x = random.nextInt(1057);
-                y = random.nextInt(1900);
-                z = random.nextInt(500);
                 
-                Iterator<Vector<String>> iterator = tableData.iterator();
-                while (iterator.hasNext()) {
-					Vector<String> rowData = (Vector<String>) iterator.next();
-					rowData.set(1, "" + random.nextInt(256));
-				}
-                
-                listModel.addElement("location: (x,y,z) : (" + x + "," + y + "," + z + ")");
-                list.ensureIndexIsVisible(list.getModel().getSize() -1);
+                commList = SERIAL_TOOL.findPort();
+                if (commList != null && commList.size()>0) {
+                    for (String s : commList) {
+                        boolean commExist = false;    
+                        for (int i=0; i<commChoice.getItemCount(); i++) {
+                            if (s.equals(commChoice.getItem(i))) {
+                                commExist = true;
+                                break;
+                            }                    
+                        }
+                        
+                        if (commExist) {
+                            continue;
+                        }
+                        else {
+                            commChoice.add(s);
+                        }
+                    }
+                    
+                    //remove unavailable serial ports
+                    for (int i=0; i<commChoice.getItemCount(); i++) {
+                        boolean commNotExist = true;    
+                        for (String s : commList) {
+                            if (s.equals(commChoice.getItem(i))) {
+                                commNotExist = false;
+                                break;
+                            }
+                        }
+                        if (commNotExist) {
+                            commChoice.remove(i);
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                    
+                }
+                else {
+                    commChoice.removeAll();
+                }
+
                 try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-                
-                logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":\"" + x + "," + y + "," + z + "\"}\r\n");
-                logList.ensureIndexIsVisible(list.getModel().getSize() -1);
-                
-                map_panel.addPosition(new Position(x, y));
-                
-//                commList = SERIAL_TOOL.findPort();
-//                if (commList != null && commList.size()>0) {
-//                    for (String s : commList) {
-//                        boolean commExist = false;    
-//                        for (int i=0; i<commChoice.getItemCount(); i++) {
-//                            if (s.equals(commChoice.getItem(i))) {
-//                                commExist = true;
-//                                break;
-//                            }                    
-//                        }
-//                        
-//                        if (commExist) {
-//                            continue;
-//                        }
-//                        else {
-//                            commChoice.add(s);
-//                        }
-//                    }
-//                    
-//                    //remove unavailable serial ports
-//                    for (int i=0; i<commChoice.getItemCount(); i++) {
-//                        boolean commNotExist = true;    
-//                        for (String s : commList) {
-//                            if (s.equals(commChoice.getItem(i))) {
-//                                commNotExist = false;
-//                                break;
-//                            }
-//                        }
-//                        if (commNotExist) {
-//                            commChoice.remove(i);
-//                        }
-//                        else {
-//                            continue;
-//                        }
-//                    }
-//                    
-//                }
-//                else {
-//                    commChoice.removeAll();
-//                }
-//
-//                try {
-//                    Thread.sleep(30);
-//                } catch (InterruptedException e) {
-//                    String err = ExceptionWriter.getErrorInfoFromException(e);
-//                    JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.INFORMATION_MESSAGE);
-//                    System.exit(0);
-//                }
+                    Thread.sleep(30);
+                } catch (InterruptedException e) {
+                    String err = ExceptionWriter.getErrorInfoFromException(e);
+                    JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
             }
         }
     }
@@ -383,32 +365,34 @@ public class DataView extends JFrame{
                             	JOptionPane.showMessageDialog(null, "didn't receive valid data!", "Error", JOptionPane.INFORMATION_MESSAGE);
                                 System.exit(0);
                             } else {
-                                String dataOriginal = new String(data);    //将字节数组数据转换位为保存了原始数据的字符串
-                                String dataValid = "";    //有效数据（用来保存原始数据字符串去除最开头*号以后的字符串）
-                                String[] elements = null;    //用来保存按空格拆分原始字符串后得到的字符串数组    
-                                //parse data
-                                if (dataOriginal.charAt(0) == '*') {    //当数据的第一个字符是*号时表示数据接收完成，开始解析                            
-                                    dataValid = dataOriginal.substring(1);
-                                    elements = dataValid.split(" ");
-                                    if (elements == null || elements.length < 1) {
-                                        JOptionPane.showMessageDialog(null, "parse data error, please check device or program!", "Error", JOptionPane.INFORMATION_MESSAGE);
-                                        System.exit(0);
-                                    } else {
-                                        try {
-                                        	
-                                            /*for (int i=0; i<elements.length; i++) {
-                                                System.out.println(elements[i]);
-                                            }*/
-                                            //System.out.println("win_dir: " + elements[5]);
-//                                        	tem.setText(elements[0] + " ℃");
-//                                          hum.setText(elements[1] + " %");
-//                                          pa.setText(elements[2] + " hPa");
-                                        } catch (ArrayIndexOutOfBoundsException e) {
-                                            JOptionPane.showMessageDialog(null, "parse data error, cannot refresh gui! please check device or program!", "Error", JOptionPane.INFORMATION_MESSAGE);
-                                            System.exit(0);
-                                        }
-                                    }    
+                                String dataOriginal = new String(data);    //convert byte data to string
+//                                System.out.println(dataOriginal);
+                                if(null != dataOriginal && !"".equals(dataOriginal)) {
+                                	Gson gson = new Gson();
+//                                	DataReceiver
+                                	DataReceiver dataReceiver = gson.fromJson(dataOriginal, DataReceiver.class);
+                                	String imuData = dataReceiver.getIMU();
+                                	String locationData = dataReceiver.getLocation();
+                                	String[] imuArray = imuData.split(",");
+                                	String[] locationArray = locationData.split(",");
+                                	
+                                	Iterator<Vector<String>> iterator = tableData.iterator();
+                                	int imuIdx = 0;
+                                    while (iterator.hasNext()) {
+                    					Vector<String> rowData = (Vector<String>) iterator.next();
+                    					rowData.set(1, imuArray[imuIdx]);
+                    					imuIdx++;
+                    				}
+                                    
+                                    listModel.addElement("location: (x,y,z) : (" + locationData + ")");
+                                    list.ensureIndexIsVisible(list.getModel().getSize() -1);
+                                    
+                                    logListModel.addElement(dataOriginal);
+                                    logList.ensureIndexIsVisible(list.getModel().getSize() -1);
+                                    
+                                    map_panel.addPosition(new Position(Integer.parseInt(locationArray[0]), Integer.parseInt(locationArray[1])));
                                 }
+                                
                             }
                         }                        
                         

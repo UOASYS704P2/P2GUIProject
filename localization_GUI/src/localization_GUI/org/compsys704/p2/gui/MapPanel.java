@@ -43,10 +43,23 @@ public class MapPanel extends JPanel {
 		for (Position position : history) {
 			drawDot(graphics, position);
 		}
+		
+		for (int i = 0; i < history.size(); i++) {
+			if(i == history.size() - 1) {
+				drawCurrentDot(graphics, history.get(i));
+			}else {
+				drawDot(graphics, history.get(i));
+			}
+		}
 	}
 	
 	private void drawDot(Graphics graphics, Position position) {
 		graphics.setColor(Color.RED);
 		graphics.fillOval(position.getX(), position.getY(), 3, 3);
+	}
+	
+	private void drawCurrentDot(Graphics graphics, Position position) {
+		graphics.setColor(Color.BLUE);
+		graphics.fillOval(position.getX(), position.getY(), 6, 6);
 	}
 }
