@@ -34,7 +34,6 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import localization_GUI.org.compsys704.p2.entity.DataReceiver;
 import localization_GUI.org.compsys704.p2.entity.Position;
-import localization_GUI.org.compsys704.p2.exception.ExceptionWriter;
 import localization_GUI.org.compsys704.p2.exception.NoSuchPort;
 import localization_GUI.org.compsys704.p2.exception.NotASerialPort;
 import localization_GUI.org.compsys704.p2.exception.PortInUse;
@@ -80,11 +79,11 @@ public class DataView extends JFrame{
     
     private Button openSerialButton = new Button("Open");
     private JTable imuTable;
-    private final JLabel lblNewLabel_1 = new JLabel("IMU:");
+    private final JLabel lblNewLabel_1 = new JLabel("Orientation:");
     private final JLabel lblNewLabel_2 = new JLabel("Output:");
     DefaultListModel<String> listModel = new DefaultListModel<>();
     private final JList<String> list = new JList<>(listModel);
-    private final JLabel label = new JLabel("Position history:");
+    private final JLabel label = new JLabel("Location history:");
     DefaultListModel<String> logListModel = new DefaultListModel<>();
     private final JList<String> logList = new JList<>(logListModel);
     
@@ -267,55 +266,78 @@ public class DataView extends JFrame{
         	int x,y,z;
             while(true) {
                 repaint();
+                x = random.nextInt(1057);
+                y = random.nextInt(1900);
+                z = random.nextInt(500);
                 
-                commList = SERIAL_TOOL.findPort();
-                if (commList != null && commList.size()>0) {
-                    for (String s : commList) {
-                        boolean commExist = false;    
-                        for (int i=0; i<commChoice.getItemCount(); i++) {
-                            if (s.equals(commChoice.getItem(i))) {
-                                commExist = true;
-                                break;
-                            }                    
-                        }
-                        
-                        if (commExist) {
-                            continue;
-                        }
-                        else {
-                            commChoice.add(s);
-                        }
-                    }
-                    
-                    //remove unavailable serial ports
-                    for (int i=0; i<commChoice.getItemCount(); i++) {
-                        boolean commNotExist = true;    
-                        for (String s : commList) {
-                            if (s.equals(commChoice.getItem(i))) {
-                                commNotExist = false;
-                                break;
-                            }
-                        }
-                        if (commNotExist) {
-                            commChoice.remove(i);
-                        }
-                        else {
-                            continue;
-                        }
-                    }
-                    
-                }
-                else {
-                    commChoice.removeAll();
-                }
-
+                Iterator<Vector<String>> iterator = tableData.iterator();
+                while (iterator.hasNext()) {
+					Vector<String> rowData = (Vector<String>) iterator.next();
+					rowData.set(1, "" + random.nextInt(180));
+				}
+                
+                listModel.addElement("location: (x,y,z) : (" + x + "," + y + "," + z + ")");
+                list.ensureIndexIsVisible(list.getModel().getSize() -1);
                 try {
-                    Thread.sleep(30);
-                } catch (InterruptedException e) {
-                    String err = ExceptionWriter.getErrorInfoFromException(e);
-                    JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.INFORMATION_MESSAGE);
-                    System.exit(0);
-                }
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+                
+                logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":\"" + x + "," + y + "," + z + "\"}\r\n");
+                logList.ensureIndexIsVisible(list.getModel().getSize() -1);
+                
+                map_panel.addPosition(new Position(x, y, random.nextInt(180)));
+
+                
+//                commList = SERIAL_TOOL.findPort();
+//                if (commList != null && commList.size()>0) {
+//                    for (String s : commList) {
+//                        boolean commExist = false;    
+//                        for (int i=0; i<commChoice.getItemCount(); i++) {
+//                            if (s.equals(commChoice.getItem(i))) {
+//                                commExist = true;
+//                                break;
+//                            }                    
+//                        }
+//                        
+//                        if (commExist) {
+//                            continue;
+//                        }
+//                        else {
+//                            commChoice.add(s);
+//                        }
+//                    }
+//                    
+//                    //remove unavailable serial ports
+//                    for (int i=0; i<commChoice.getItemCount(); i++) {
+//                        boolean commNotExist = true;    
+//                        for (String s : commList) {
+//                            if (s.equals(commChoice.getItem(i))) {
+//                                commNotExist = false;
+//                                break;
+//                            }
+//                        }
+//                        if (commNotExist) {
+//                            commChoice.remove(i);
+//                        }
+//                        else {
+//                            continue;
+//                        }
+//                    }
+//                    
+//                }
+//                else {
+//                    commChoice.removeAll();
+//                }
+//
+//                try {
+//                    Thread.sleep(30);
+//                } catch (InterruptedException e) {
+//                    String err = ExceptionWriter.getErrorInfoFromException(e);
+//                    JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.INFORMATION_MESSAGE);
+//                    System.exit(0);
+//                }
             }
         }
     }
@@ -366,7 +388,7 @@ public class DataView extends JFrame{
                                 System.exit(0);
                             } else {
                                 String dataOriginal = new String(data);    //convert byte data to string
-//                                System.out.println(dataOriginal);
+                                System.out.println(dataOriginal);
                                 if(null != dataOriginal && !"".equals(dataOriginal)) {
                                 	Gson gson = new Gson();
 //                                	DataReceiver
@@ -390,7 +412,7 @@ public class DataView extends JFrame{
                                     logListModel.addElement(dataOriginal);
                                     logList.ensureIndexIsVisible(list.getModel().getSize() -1);
                                     
-                                    map_panel.addPosition(new Position(Integer.parseInt(locationArray[0]), Integer.parseInt(locationArray[1])));
+                                    map_panel.addPosition(new Position(Integer.parseInt(locationArray[0]), Integer.parseInt(locationArray[1]), Integer.parseInt(imuArray[2])));
                                 }
                                 
                             }
