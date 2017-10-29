@@ -23,12 +23,12 @@ public class Position {
 	public Position(double x, double y, int orientation) {
 		this.x = (int) (x/DIVIDE);
 		this.y = (int) (535 - y/DIVIDE);
-		int newAxis = orientation + 90;
-		if (newAxis > 180) {
-			newAxis = 180 - newAxis;
-		}else if (newAxis < -180) {
-			newAxis = newAxis + 180;
-		}
+		int newAxis = orientation - 180;
+//		if (newAxis > 180) {
+//			newAxis = 180 - newAxis;
+//		}else if (newAxis < -180) {
+//			newAxis = newAxis + 180;
+//		}
 		this.orientation = newAxis;
 	}
 }

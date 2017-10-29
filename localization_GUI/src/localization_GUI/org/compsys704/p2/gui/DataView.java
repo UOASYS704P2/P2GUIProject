@@ -16,6 +16,7 @@ import java.util.TooManyListenersException;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -52,12 +53,12 @@ public class DataView extends JFrame{
 	/**
      * frame location x value
      */
-    public static final int LOC_X = 200;
+    public static final int LOC_X = 50;
     
     /**
      * frame location y value
      */
-    public static final int LOC_Y = 70;
+    public static final int LOC_Y = 50;
     
     /**
      * frame width
@@ -92,6 +93,7 @@ public class DataView extends JFrame{
     private final JScrollPane scrollPane_1 = new JScrollPane();
     
     private MapPanel map_panel;
+    private MapFrame mapFrame;
     
     public DataView() {
         commList = SERIAL_TOOL.findPort();
@@ -148,8 +150,7 @@ public class DataView extends JFrame{
         lblBautRate.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         lblBautRate.setBounds(226, 10, 78, 21);
         getContentPane().add(lblBautRate);
-        
-//        imuTable = new JTable();
+
         lblNewLabel_1.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         lblNewLabel_1.setLabelFor(imuTable);
         Vector<String> row0Data = new Vector<>();
@@ -214,9 +215,23 @@ public class DataView extends JFrame{
         list.setBorder(new LineBorder(new Color(0, 0, 0)));
         
         map_panel = new MapPanel();
-        map_panel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
+        map_panel.setBorder(new LineBorder(new Color(0, 0, 0), 1));
         map_panel.setBounds(326, 48, 298, 535);
         getContentPane().add(map_panel);
+        
+        JButton btnCoolMap = new JButton("FrozenMap");
+        btnCoolMap.setBounds(545, 10, 106, 23);
+        btnCoolMap.setBackground(SystemColor.activeCaption);
+        btnCoolMap.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        btnCoolMap.setForeground(SystemColor.desktop);
+        getContentPane().add(btnCoolMap);
+        btnCoolMap.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mapFrame = MapFrame.getInstance();
+				mapFrame.setVisible(true);
+			}
+		});
         
         openSerialButton.addActionListener(new ActionListener() {
 
@@ -288,6 +303,7 @@ public class DataView extends JFrame{
                 logList.ensureIndexIsVisible(list.getModel().getSize() -1);
                 
                 map_panel.addPosition(new Position(x, y, random.nextInt(180)));
+                
 
                 
 //                commList = SERIAL_TOOL.findPort();
@@ -391,7 +407,6 @@ public class DataView extends JFrame{
                                 System.out.println(dataOriginal);
                                 if(null != dataOriginal && !"".equals(dataOriginal)) {
                                 	Gson gson = new Gson();
-//                                	DataReceiver
                                 	DataReceiver dataReceiver = gson.fromJson(dataOriginal, DataReceiver.class);
                                 	String imuData = dataReceiver.getIMU();
                                 	String locationData = dataReceiver.getLocation();

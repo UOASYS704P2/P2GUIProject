@@ -6,7 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,9 +24,7 @@ import localization_GUI.org.compsys704.p2.entity.Position;
  */
 public class MapPanel extends JPanel {
 	
-	Line2D line = new Line2D.Float(100f, 100f, 300f, 300f); 
-	
-	private static List<Position> history = new ArrayList<>();
+	public static List<Position> history = new ArrayList<>();
 	BufferedImage mapIMG;
 	
 	public MapPanel() {
