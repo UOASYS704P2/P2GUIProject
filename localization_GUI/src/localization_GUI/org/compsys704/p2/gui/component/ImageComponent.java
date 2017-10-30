@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 import localization_GUI.org.compsys704.p2.entity.Position;
-import localization_GUI.org.compsys704.p2.gui.MapFrame;
 import localization_GUI.org.compsys704.p2.gui.MapPanel;
 
 public class ImageComponent extends JComponent {

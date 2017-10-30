@@ -35,6 +35,7 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import localization_GUI.org.compsys704.p2.entity.DataReceiver;
 import localization_GUI.org.compsys704.p2.entity.Position;
+import localization_GUI.org.compsys704.p2.exception.ExceptionWriter;
 import localization_GUI.org.compsys704.p2.exception.NoSuchPort;
 import localization_GUI.org.compsys704.p2.exception.NotASerialPort;
 import localization_GUI.org.compsys704.p2.exception.PortInUse;
@@ -277,83 +278,81 @@ public class DataView extends JFrame{
     private class RepaintThread implements Runnable {
         public void run() {
         	
-        	Random random = new Random();
-        	int x,y,z;
+//        	Random random = new Random();
+//        	int x,y,z;
             while(true) {
                 repaint();
-                x = random.nextInt(1057);
-                y = random.nextInt(1900);
-                z = random.nextInt(500);
-                
-                Iterator<Vector<String>> iterator = tableData.iterator();
-                while (iterator.hasNext()) {
-					Vector<String> rowData = (Vector<String>) iterator.next();
-					rowData.set(1, "" + random.nextInt(180));
-				}
-                
-                listModel.addElement("location: (x,y,z) : (" + x + "," + y + "," + z + ")");
-                list.ensureIndexIsVisible(list.getModel().getSize() -1);
-                try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-                
-                logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":\"" + x + "," + y + "," + z + "\"}\r\n");
-                logList.ensureIndexIsVisible(list.getModel().getSize() -1);
-                
-                map_panel.addPosition(new Position(x, y, random.nextInt(180)));
-                
-
-                
-//                commList = SERIAL_TOOL.findPort();
-//                if (commList != null && commList.size()>0) {
-//                    for (String s : commList) {
-//                        boolean commExist = false;    
-//                        for (int i=0; i<commChoice.getItemCount(); i++) {
-//                            if (s.equals(commChoice.getItem(i))) {
-//                                commExist = true;
-//                                break;
-//                            }                    
-//                        }
-//                        
-//                        if (commExist) {
-//                            continue;
-//                        }
-//                        else {
-//                            commChoice.add(s);
-//                        }
-//                    }
-//                    
-//                    //remove unavailable serial ports
-//                    for (int i=0; i<commChoice.getItemCount(); i++) {
-//                        boolean commNotExist = true;    
-//                        for (String s : commList) {
-//                            if (s.equals(commChoice.getItem(i))) {
-//                                commNotExist = false;
-//                                break;
-//                            }
-//                        }
-//                        if (commNotExist) {
-//                            commChoice.remove(i);
-//                        }
-//                        else {
-//                            continue;
-//                        }
-//                    }
-//                    
-//                }
-//                else {
-//                    commChoice.removeAll();
-//                }
-//
+//                x = random.nextInt(1057);
+//                y = random.nextInt(1900);
+//                z = random.nextInt(500);
+//                
+//                Iterator<Vector<String>> iterator = tableData.iterator();
+//                while (iterator.hasNext()) {
+//					Vector<String> rowData = (Vector<String>) iterator.next();
+//					rowData.set(1, "" + random.nextInt(180));
+//				}
+//                
+//                listModel.addElement("location: (x,y,z) : (" + x + "," + y + "," + z + ")");
+//                list.ensureIndexIsVisible(list.getModel().getSize() -1);
 //                try {
-//                    Thread.sleep(30);
-//                } catch (InterruptedException e) {
-//                    String err = ExceptionWriter.getErrorInfoFromException(e);
-//                    JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.INFORMATION_MESSAGE);
-//                    System.exit(0);
-//                }
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//                
+//                logListModel.addElement("{\"IMU\":\"" + x + "," + y + "," + z + "\", \"location\":\"" + x + "," + y + "," + z + "\"}\r\n");
+//                logList.ensureIndexIsVisible(list.getModel().getSize() -1);
+//                
+//                map_panel.addPosition(new Position(x, y, 280));
+                
+                commList = SERIAL_TOOL.findPort();
+                if (commList != null && commList.size()>0) {
+                    for (String s : commList) {
+                        boolean commExist = false;    
+                        for (int i=0; i<commChoice.getItemCount(); i++) {
+                            if (s.equals(commChoice.getItem(i))) {
+                                commExist = true;
+                                break;
+                            }                    
+                        }
+                        
+                        if (commExist) {
+                            continue;
+                        }
+                        else {
+                            commChoice.add(s);
+                        }
+                    }
+                    
+                    //remove unavailable serial ports
+                    for (int i=0; i<commChoice.getItemCount(); i++) {
+                        boolean commNotExist = true;    
+                        for (String s : commList) {
+                            if (s.equals(commChoice.getItem(i))) {
+                                commNotExist = false;
+                                break;
+                            }
+                        }
+                        if (commNotExist) {
+                            commChoice.remove(i);
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+                    
+                }
+                else {
+                    commChoice.removeAll();
+                }
+
+                try {
+                    Thread.sleep(30);
+                } catch (InterruptedException e) {
+                    String err = ExceptionWriter.getErrorInfoFromException(e);
+                    JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
             }
         }
     }
@@ -417,16 +416,26 @@ public class DataView extends JFrame{
                                 	int imuIdx = 0;
                                     while (iterator.hasNext()) {
                     					Vector<String> rowData = (Vector<String>) iterator.next();
+//                    					if(imuIdx == 2) {
+//                    						int orientation = Integer.parseInt(imuArray[imuIdx]);
+//                    						if(orientation >= -90 && orientation <= 180) {
+//                    							orientation -= 90;
+//                    						}else if(orientation >= -180 && orientation < -90) {
+//                    							orientation += 270;
+//                    						}
+//                    						rowData.set(1, imuArray[imuIdx]);
+//                    					}else {
+//                    						rowData.set(1, imuArray[imuIdx]);
+//                    					}
                     					rowData.set(1, imuArray[imuIdx]);
                     					imuIdx++;
                     				}
                                     
-                                    listModel.addElement("location: (x,y,z) : (" + locationData + ")");
+                                    listModel.addElement("location: (x,y) : (" + locationData + ")");
                                     list.ensureIndexIsVisible(list.getModel().getSize() -1);
                                     
                                     logListModel.addElement(dataOriginal);
                                     logList.ensureIndexIsVisible(list.getModel().getSize() -1);
-                                    
                                     map_panel.addPosition(new Position(Integer.parseInt(locationArray[0]), Integer.parseInt(locationArray[1]), Integer.parseInt(imuArray[2])));
                                 }
                                 
