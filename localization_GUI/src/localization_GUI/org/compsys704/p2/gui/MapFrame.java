@@ -26,7 +26,7 @@ public class MapFrame extends JFrame{
 		setBounds(new Rectangle(X, Y, WIDTH, HEIGHT));
         
         try {
-			imageViewer = new ImageViewer("imgs/3.jpg");
+			imageViewer = new ImageViewer("imgs/Map_full.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
