@@ -395,7 +395,7 @@ public class DataView extends JFrame{
                         }
                         else {
                             data = SERIAL_TOOL.readFromPort(serialPort); //read data and store in a byte[]
-                            //System.out.println(data);
+//                            System.out.println(data);
                             
                             // parse customized receiving data
                             if (data == null || data.length < 1) {
