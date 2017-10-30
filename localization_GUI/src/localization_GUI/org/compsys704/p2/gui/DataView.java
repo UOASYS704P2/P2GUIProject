@@ -44,6 +44,7 @@ import localization_GUI.org.compsys704.p2.exception.SerialPortParameterFailure;
 import localization_GUI.org.compsys704.p2.serial.SerialTool;
 
 /**
+ * GUI main frame
  * @author KGL
  *
  */
@@ -271,9 +272,11 @@ public class DataView extends JFrame{
         
         new Thread(new RepaintThread()).start();
     }
-    
-    /*
+
+    /**
      * repaint every 30ms
+     * @author KGL
+     *
      */
     private class RepaintThread implements Runnable {
         public void run() {
@@ -452,6 +455,6 @@ public class DataView extends JFrame{
     }
     
     public static void main(String[] args) {
-        DataView view = new DataView();
+        new DataView();
     }
 }

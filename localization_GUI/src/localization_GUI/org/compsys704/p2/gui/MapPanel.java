@@ -19,11 +19,13 @@ import javax.swing.JPanel;
 import localization_GUI.org.compsys704.p2.entity.Position;
 
 /**
+ * The small map shown on the main frame
  * @author KGL
  *
  */
 public class MapPanel extends JPanel {
 	
+	/** all locations history will be stored here */
 	public static List<Position> history = new ArrayList<>();
 	BufferedImage mapIMG;
 	

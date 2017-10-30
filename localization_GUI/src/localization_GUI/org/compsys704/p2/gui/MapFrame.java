@@ -8,6 +8,8 @@ import javax.swing.JFrame;
 import localization_GUI.org.compsys704.p2.gui.component.ImageViewer;
 
 /**
+ * Once "FrozenMap" button is clicked , this frame will appear.
+ * This frame is used for showing the Map Overlap
  * @author KGL
  *
  */

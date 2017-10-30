@@ -14,9 +14,11 @@ import localization_GUI.org.compsys704.p2.exception.ReadDataFromSerialPortFailur
 import localization_GUI.org.compsys704.p2.exception.SerialPortParameterFailure;
 
 /**
+ * This is used mainly for testing  data reading through serial port(we don't use this file now)
  * @author KGL
  *
  */
+@Deprecated
 public class ReadingTest {
 	
 	private static SerialTool SERIAL_TOOL = SerialTool.getSerialTool();

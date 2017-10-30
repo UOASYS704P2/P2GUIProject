@@ -1,6 +1,7 @@
 package localization_GUI.org.compsys704.p2.entity;
 
 /**
+ * Json receiver(format json data into java object)
  * @author KGL
  *
  */

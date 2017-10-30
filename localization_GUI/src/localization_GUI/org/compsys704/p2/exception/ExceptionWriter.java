@@ -6,9 +6,9 @@ import java.io.StringWriter;
 
 public class ExceptionWriter {
 	/**
-     * 将Exception中的错误信息封装到字符串中并返回该字符串
-     * @param e 包含错误的Exception
-     * @return 错误信息字符串
+     * Encapsulate error information and send the information to the GUI
+     * @param e Exception
+     * @return 
      */
     public static String getErrorInfoFromException(Exception e) { 
             
@@ -22,7 +22,7 @@ public class ExceptionWriter {
                 return "\r\n" + sw.toString() + "\r\n";  
                 
             } catch (Exception e2) {  
-                return "出错啦！未获取到错误信息，请检查后重试!";  
+                return "Error, cannot catch exception! Please check!";  
             } finally {
                 try {
                     if (pw != null) {

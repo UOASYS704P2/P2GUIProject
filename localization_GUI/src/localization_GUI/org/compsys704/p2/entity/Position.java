@@ -1,6 +1,7 @@
 package localization_GUI.org.compsys704.p2.entity;
 
 /**
+ * Position Class(used for drawing points on the axis)
  * @author KGL
  *
  */

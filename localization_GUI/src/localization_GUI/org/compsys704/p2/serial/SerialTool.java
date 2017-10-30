@@ -20,6 +20,7 @@ import localization_GUI.org.compsys704.p2.exception.ReadDataFromSerialPortFailur
 import localization_GUI.org.compsys704.p2.exception.SerialPortParameterFailure;
 
 /**
+ * Serial port reading tool
  * @author KGL
  *
  */

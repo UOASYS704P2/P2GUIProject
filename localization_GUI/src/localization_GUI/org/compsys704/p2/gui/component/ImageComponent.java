@@ -20,11 +20,13 @@ import localization_GUI.org.compsys704.p2.entity.Position;
 import localization_GUI.org.compsys704.p2.gui.MapPanel;
 
 /**
+ * Image component (showing the map in the frame)
  * @author KGL
  *
  */
 public class ImageComponent extends JComponent {
 	
+	/** pointing to the MapPanel.history (this container includes all locations history) */
 	private static List<Position> history = MapPanel.history;
 
     final BufferedImage img;

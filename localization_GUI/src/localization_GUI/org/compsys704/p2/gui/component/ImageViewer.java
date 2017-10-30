@@ -9,6 +9,8 @@ import javax.swing.event.*;
 import localization_GUI.org.compsys704.p2.gui.MapFrame;
 
 /**
+ * Add amazing functions to the image component.
+ * Like dragging the map, zooming in/out
  * @author KGL
  *
  */
@@ -29,7 +31,7 @@ public class ImageViewer extends JComponent {
             }
         });
         
-        MouseAdapter ma = new MouseAdapter() {
+        MouseAdapter mouseAdapter = new MouseAdapter() {
 
             private Point origin;
 
@@ -63,8 +65,8 @@ public class ImageViewer extends JComponent {
 
         };
 
-        image.addMouseListener(ma);
-        image.addMouseMotionListener(ma);
+        image.addMouseListener(mouseAdapter);
+        image.addMouseMotionListener(mouseAdapter);
         
         this.setLayout(new BorderLayout());
         this.add(slider, BorderLayout.NORTH);
