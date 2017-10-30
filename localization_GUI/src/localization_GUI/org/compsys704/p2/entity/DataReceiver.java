@@ -1,5 +1,9 @@
 package localization_GUI.org.compsys704.p2.entity;
 
+/**
+ * @author KGL
+ *
+ */
 public class DataReceiver {
 
 	private String IMU;

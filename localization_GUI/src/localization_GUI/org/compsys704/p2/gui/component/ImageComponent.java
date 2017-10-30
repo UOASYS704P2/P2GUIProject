@@ -19,6 +19,10 @@ import javax.swing.JComponent;
 import localization_GUI.org.compsys704.p2.entity.Position;
 import localization_GUI.org.compsys704.p2.gui.MapPanel;
 
+/**
+ * @author KGL
+ *
+ */
 public class ImageComponent extends JComponent {
 	
 	private static List<Position> history = MapPanel.history;

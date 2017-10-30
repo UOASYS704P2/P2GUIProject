@@ -7,6 +7,10 @@ import javax.swing.JFrame;
 
 import localization_GUI.org.compsys704.p2.gui.component.ImageViewer;
 
+/**
+ * @author KGL
+ *
+ */
 public class MapFrame extends JFrame{
 	
 	private static final MapFrame INSTANCE = new MapFrame();

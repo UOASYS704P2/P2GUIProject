@@ -8,6 +8,10 @@ import javax.swing.event.*;
 
 import localization_GUI.org.compsys704.p2.gui.MapFrame;
 
+/**
+ * @author KGL
+ *
+ */
 public class ImageViewer extends JComponent {
     final JSlider slider;
     public final ImageComponent image;
