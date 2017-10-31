@@ -4,6 +4,10 @@ COMPSYS704 project2 GUI part.
 
 This repository includes GUI program for localization project.
 
+Running Environment: Eclips
+Language: java
+
+
 How it works:
 1)	Executing command:
     git clone https://github.com/UOASYS704P2/P2_EvilCorp_Localization_Part2.git
