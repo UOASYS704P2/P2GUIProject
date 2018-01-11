@@ -4,7 +4,7 @@ COMPSYS704 project2 GUI part.
 
 This repository includes GUI program for localization project.
 
-Running Environment: Eclips
+Running Environment: Eclipse
 Language: java
 
 
